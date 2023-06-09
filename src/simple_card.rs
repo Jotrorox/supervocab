@@ -30,9 +30,9 @@ impl SimpleCard {
         }
     }
 
-    // pub fn set_id(&mut self, id: &str) {
-    //     self.id = Some(id.to_string());
-    // }
+    pub fn set_id(&mut self, id: &str) {
+        self.id = Some(id.to_string());
+    }
 
     pub async fn send(&self, key: &Key) -> Result<(), reqwest::Error> {
         let client = Client::new();
