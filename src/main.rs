@@ -121,13 +121,13 @@ async fn get_vocab_card_ids(api_key: &str) -> Result<Vec<String>, Box<dyn std::e
 
 #[derive(Serialize)]
 struct CardRequest {
-    specified: String,
+    specified: Vec<String>,
 }
 
 async fn get_card_from_id(card_id: &str, api_key: &str) -> Result<Value, Box<dyn std::error::Error>> {
     let url = format!("{}/cards/get/specify", BASE_URL);
     let card_request = CardRequest {
-        specified: card_id.to_string(),
+        specified: vec![card_id.to_string()],
     };
 
     let client = reqwest::Client::new();
@@ -145,8 +145,9 @@ async fn get_card_from_id(card_id: &str, api_key: &str) -> Result<Value, Box<dyn
     Ok(json)
 }
 
-fn check_if_due(resp: &Value, card_id: &str, api_key: &str) -> bool {
-    let given_time_string = format!("{}Z", resp[card_id]["data"]["modified_when"]);
+fn check_if_due(resp: &Value, card_id: &str) -> bool {
+    let mut given_time_string = format!("{}Z", resp[card_id]["data"]["modified_when"]);
+    given_time_string.retain(|c| c != '\"');
     let given_time = DateTime::parse_from_rfc3339(
         &given_time_string,
     ).unwrap().with_timezone(&Utc);
@@ -156,7 +157,9 @@ fn check_if_due(resp: &Value, card_id: &str, api_key: &str) -> bool {
 
     let tags = resp[card_id]["data"]["tags"].as_array().unwrap();
 
-    if tags.contains(&serde_json::Value::String("super-vocab-stage-1".to_string())) {
+    if tags.contains(&serde_json::Value::String("super-vocab-stage-0".to_string())) {
+        return true
+    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-1".to_string())) {
         if days_difference >= 1 {
             return true
         }
@@ -206,14 +209,14 @@ async fn check_for_due_cards(key: &Key) {
     }
 
     if card_ids.is_empty() {
-        println!("No due cards found");
+        println!("No cards found");
         return;
     }
 
     for card_id in card_ids {
         match get_card_from_id(&card_id, &key.key).await {
             Ok(card) => {
-                if check_if_due(&card, &card_id, &key.key) {
+                if check_if_due(&card, &card_id) {
                     let _ = set_card_due(&card_id, &key.key).await;
                 }
             }
@@ -233,7 +236,7 @@ async fn main() {
     //     eprintln!("Error sending card: {}", e);
     // }
 
-    // check_for_due_cards(&key).await;
+    check_for_due_cards(&key).await;
 
     println!("Uncomment code in main to run diffrent functions");
 }
