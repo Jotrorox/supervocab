@@ -4,7 +4,7 @@ A spaced Repetition add-on to [Supernotes](supernotes.app).
 
 ## Usage
 
-1. Install the rust toolchain from [rustup.rs](rustup.rs).
+1. Install the rust toolchain from [rustup.rs](https://rustup.rs).
 2. Remove the .example extension from the config.json.example
 3. Set your API key in the config.json
 4. `cargo run`
