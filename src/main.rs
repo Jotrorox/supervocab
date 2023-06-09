@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::fs;
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use reqwest::Client;
+use chrono::{DateTime, FixedOffset, Local, Utc};
 
 const BASE_URL: &str = "https://api.supernotes.app/v1";
 
@@ -96,7 +97,7 @@ async fn get_vocab_card_ids(api_key: &str) -> Result<Vec<String>, Box<dyn std::e
             filters: vec![TagFilter {
                 filter_type: "tag",
                 operator: "contains",
-                arg: "super-vocaber-card",
+                arg: "super-vocab-card",
             }],
         },
     };
@@ -139,21 +140,61 @@ async fn get_card_from_id(card_id: &str, api_key: &str) -> Result<Value, Box<dyn
         .send()
         .await?;
 
-    // Handle the response as needed
-    println!("Request Debug at line 143: {:?}", response);
-
     let json = response.json::<serde_json::Value>().await?;
 
     Ok(json)
 }
 
-async fn check_if_due(resp: Value, api_key: &str) -> Result<bool, Box<dyn std::error::Error>> {
-    // Do request using id
-    Ok(false)
+fn check_if_due(resp: &Value, card_id: &str, api_key: &str) -> bool {
+    let given_time_string = format!("{}Z", resp[card_id]["data"]["modified_when"]);
+    let given_time = DateTime::parse_from_rfc3339(
+        &given_time_string,
+    ).unwrap().with_timezone(&Utc);
+    let current_time = Utc::now();
+    let duration = current_time - given_time;
+    let days_difference = duration.num_days();
+
+    let tags = resp[card_id]["data"]["tags"].as_array().unwrap();
+
+    if tags.contains(&serde_json::Value::String("super-vocab-stage-1".to_string())) {
+        if days_difference >= 1 {
+            return true
+        }
+    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-2".to_string())) {
+        if days_difference >= 3 {
+            return true
+        }
+    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-3".to_string())) {
+        if days_difference >= 7 {
+            return true
+        }
+    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-4".to_string())) {
+        if days_difference >= 14 {
+            return true
+        }
+    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-5".to_string())) {
+        if days_difference >= 30 {
+            return true
+        }
+    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-6".to_string())) {
+        if days_difference >= 90 {
+            return true
+        }
+    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-7".to_string())) {
+        if days_difference >= 180 {
+            return true
+        }
+    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-8".to_string())) {
+        if days_difference >= 365 {
+            return true
+        }
+    } 
+
+    false
 }
 
 async fn set_card_due(card_id: &str, api_key: &str) -> Result<(), Box<dyn std::error::Error>> {
-    // Do request using id
+    println!("Cards to check");
     Ok(())
 }
 
@@ -172,16 +213,8 @@ async fn check_for_due_cards(key: &Key) {
     for card_id in card_ids {
         match get_card_from_id(&card_id, &key.key).await {
             Ok(card) => {
-                match check_if_due(card, &key.key).await {
-                    Ok(due) => {
-                        if due {
-                            match set_card_due(&card_id, &key.key).await {
-                                Ok(_) => println!("Card {} set to due", &card_id),
-                                Err(e) => println!("Error setting card due: {}", e),
-                            }
-                        }
-                    },
-                    Err(e) => println!("Error checking if card is due: {}", e),
+                if check_if_due(&card, &card_id, &key.key) {
+                    let _ = set_card_due(&card_id, &key.key).await;
                 }
             }
             Err(e) => println!("Error: {}", e),
