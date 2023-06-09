@@ -200,5 +200,7 @@ async fn main() {
     //     eprintln!("Error sending card: {}", e);
     // }
 
-    check_for_due_cards(&key).await;
+    // check_for_due_cards(&key).await;
+
+    println!("Uncomment code in main to run diffrent functions");
 }
