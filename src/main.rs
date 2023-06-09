@@ -1,7 +1,6 @@
-use serde::{Serialize, Deserialize};
+use serde::{Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
-use std::fs;
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use chrono::{DateTime, Utc};
 
@@ -16,6 +15,10 @@ use constants::BASE_URL;
 mod key;
 
 use key::Key;
+
+mod tag_updater;
+
+use tag_updater::*;
 
 #[derive(Serialize, Debug)]
 struct Filter<'a> {
@@ -91,62 +94,33 @@ async fn get_card_from_id(card_id: &str, api_key: &str) -> Result<Value, Box<dyn
     Ok(json)
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-
-struct CardTags {
-    tags: Vec<String>,
-}
-#[derive(Serialize, Deserialize, Debug)]
-struct TagUpdateCardData {
-    tags: CardTags,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct TagUpdateCard {
-    id: String,
-    data: TagUpdateCardData,
-}
-
-impl TagUpdateCard {
-    fn new(id: &str, tags: Vec<String>) -> Self {
-        Self {
-            id: id.to_string(),
-            data: TagUpdateCardData {
-                tags: CardTags {
-                    tags,
-                }
-            }
-        }
-    }
-    async fn update_tags(&self, api_key: &str) -> Result<Value, Box<dyn std::error::Error>> {
-        let client = reqwest::Client::new();
-        let response = client
-            .patch(&format!("{}/cards/", BASE_URL))
-            .header("accept", "application/json")
-            .header("Api-Key", api_key)
-            .header("Content-Type", "application/json")
-            .json(&self)
-            .send()
-            .await?;
-    
-        let updated_card = response.json::<serde_json::Value>().await?;
-        Ok(updated_card)
-    }
-}
-
 async fn check_if_due(mut resp: Value, card_id: &str, api_key: &str) -> bool {
     if resp[card_id]["membership"]["status"] != 2 { 
         return false;
     }
 
     if &resp[card_id]["data"]["tags"].clone().to_owned().as_array_mut().unwrap().len() <= &1 {
-        let tuc = TagUpdateCard::new(card_id, vec!["super-vocab-stage-0".to_string()]);
-        match tuc.update_tags(api_key).await {
-            Ok(tuc_resp) => resp = tuc_resp,
-            Err(e) => eprintln!("Error getting card ids: {}", e),
+        let mut card_updates = CardTagUpdates::new();
+        card_updates.insert(
+            card_id.to_string(), 
+            CardTagUpdate {
+                data: CardTagData {
+                    tags: vec![
+                        "super-vocab-stage-0".to_string(),
+                        "super-vocab-card".to_string()],
+                },
+            }
+        );
+        let mut tag_updater = TagUpdater::new(
+            vec![card_id.to_string()], 
+            card_updates
+        );
+        match tag_updater.update_tags().await {
+            Ok(tu_resp) => resp = tu_resp,
+            Err(e) => eprintln!("Error updating tags: {}", e),
         }
+        return true;
     }
-    println!("resp: {}", resp);
     let mut given_time_string = format!("{}Z", resp[card_id]["data"]["modified_when"]);
     given_time_string.retain(|c| c != '\"');
     let given_time = DateTime::parse_from_rfc3339(
@@ -198,7 +172,10 @@ async fn check_if_due(mut resp: Value, card_id: &str, api_key: &str) -> bool {
 }
 
 async fn set_card_due(card_id: &str, api_key: &str) -> Result<(), Box<dyn std::error::Error>> {
-    println!("Setting card {} due", card_id);
+    let mut resp: Value = get_card_from_id(card_id, api_key).await?;
+
+    println!("Setting card due: {}", card_id);
+
     Ok(())
 }
 
