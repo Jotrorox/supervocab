@@ -1,5 +1,5 @@
 use reqwest::{Client, Error};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
 
@@ -47,7 +47,7 @@ impl TagUpdater {
             .json(&self.card_tag_updates)
             .send()
             .await?;
-    
+
         println!("Status: {}", response.status());
         let json = response.json::<serde_json::Value>().await?;
         Ok(json)

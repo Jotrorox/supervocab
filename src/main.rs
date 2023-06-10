@@ -1,23 +1,19 @@
-use serde::{Serialize};
+use chrono::{DateTime, Utc};
+use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
+use serde::Serialize;
 use serde_json::Value;
 use std::collections::HashMap;
-use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
-use chrono::{DateTime, Utc};
 
 mod simple_card;
-
 use simple_card::SimpleCard;
 
 mod constants;
-
 use constants::BASE_URL;
 
 mod key;
-
 use key::Key;
 
 mod tag_updater;
-
 use tag_updater::*;
 
 #[derive(Serialize, Debug)]
@@ -73,7 +69,10 @@ struct CardRequest {
     specified: Vec<String>,
 }
 
-async fn get_card_from_id(card_id: &str, api_key: &str) -> Result<Value, Box<dyn std::error::Error>> {
+async fn get_card_from_id(
+    card_id: &str,
+    api_key: &str,
+) -> Result<Value, Box<dyn std::error::Error>> {
     let url = format!("{}/cards/get/specify", BASE_URL);
     let card_request = CardRequest {
         specified: vec![card_id.to_string()],
@@ -95,26 +94,31 @@ async fn get_card_from_id(card_id: &str, api_key: &str) -> Result<Value, Box<dyn
 }
 
 async fn check_if_due(mut resp: Value, card_id: &str, api_key: &str) -> bool {
-    if resp[card_id]["membership"]["status"] != 2 { 
+    if resp[card_id]["membership"]["status"] != 2 {
         return false;
     }
 
-    if &resp[card_id]["data"]["tags"].clone().to_owned().as_array_mut().unwrap().len() <= &1 {
+    if &resp[card_id]["data"]["tags"]
+        .clone()
+        .to_owned()
+        .as_array_mut()
+        .unwrap()
+        .len()
+        <= &1
+    {
         let mut card_updates = CardTagUpdates::new();
         card_updates.insert(
-            card_id.to_string(), 
+            card_id.to_string(),
             CardTagUpdate {
                 data: CardTagData {
                     tags: vec![
                         "super-vocab-stage-0".to_string(),
-                        "super-vocab-card".to_string()],
+                        "super-vocab-card".to_string(),
+                    ],
                 },
-            }
+            },
         );
-        let mut tag_updater = TagUpdater::new(
-            vec![card_id.to_string()], 
-            card_updates
-        );
+        let mut tag_updater = TagUpdater::new(vec![card_id.to_string()], card_updates);
         match tag_updater.update_tags().await {
             Ok(tu_resp) => resp = tu_resp,
             Err(e) => eprintln!("Error updating tags: {}", e),
@@ -123,50 +127,68 @@ async fn check_if_due(mut resp: Value, card_id: &str, api_key: &str) -> bool {
     }
     let mut given_time_string = format!("{}Z", resp[card_id]["data"]["modified_when"]);
     given_time_string.retain(|c| c != '\"');
-    let given_time = DateTime::parse_from_rfc3339(
-        &given_time_string,
-    ).unwrap().with_timezone(&Utc);
+    let given_time = DateTime::parse_from_rfc3339(&given_time_string)
+        .unwrap()
+        .with_timezone(&Utc);
     let current_time = Utc::now();
     let duration = current_time - given_time;
     let days_difference = duration.num_days();
 
     let tags = resp[card_id]["data"]["tags"].as_array().unwrap();
 
-    if tags.contains(&serde_json::Value::String("super-vocab-stage-0".to_string())) {
-        return true
-    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-1".to_string())) {
+    if tags.contains(&serde_json::Value::String(
+        "super-vocab-stage-0".to_string(),
+    )) {
+        return true;
+    } else if tags.contains(&serde_json::Value::String(
+        "super-vocab-stage-1".to_string(),
+    )) {
         if days_difference >= 1 {
-            return true
+            return true;
         }
-    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-2".to_string())) {
+    } else if tags.contains(&serde_json::Value::String(
+        "super-vocab-stage-2".to_string(),
+    )) {
         if days_difference >= 3 {
-            return true
+            return true;
         }
-    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-3".to_string())) {
+    } else if tags.contains(&serde_json::Value::String(
+        "super-vocab-stage-3".to_string(),
+    )) {
         if days_difference >= 7 {
-            return true
+            return true;
         }
-    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-4".to_string())) {
+    } else if tags.contains(&serde_json::Value::String(
+        "super-vocab-stage-4".to_string(),
+    )) {
         if days_difference >= 14 {
-            return true
+            return true;
         }
-    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-5".to_string())) {
+    } else if tags.contains(&serde_json::Value::String(
+        "super-vocab-stage-5".to_string(),
+    )) {
         if days_difference >= 30 {
-            return true
+            return true;
         }
-    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-6".to_string())) {
+    } else if tags.contains(&serde_json::Value::String(
+        "super-vocab-stage-6".to_string(),
+    )) {
         if days_difference >= 90 {
-            return true
+            return true;
         }
-    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-7".to_string())) {
+    } else if tags.contains(&serde_json::Value::String(
+        "super-vocab-stage-7".to_string(),
+    )) {
         if days_difference >= 180 {
-            return true
+            return true;
         }
-    } else if tags.contains(&serde_json::Value::String("super-vocab-stage-8".to_string())) {
+    } else if tags.contains(&serde_json::Value::String(
+        "super-vocab-stage-8".to_string(),
+    )) {
         if days_difference >= 365 {
-            return true
+            return true;
         }
-    } 
+    }
 
     false
 }

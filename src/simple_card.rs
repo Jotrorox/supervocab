@@ -1,5 +1,8 @@
-use reqwest::{Client, header::{HeaderMap, HeaderValue, CONTENT_TYPE}};
-use serde::{Serialize, Deserialize};
+use reqwest::{
+    header::{HeaderMap, HeaderValue, CONTENT_TYPE},
+    Client,
+};
+use serde::{Deserialize, Serialize};
 
 use crate::constants::BASE_URL;
 use crate::key::Key;
