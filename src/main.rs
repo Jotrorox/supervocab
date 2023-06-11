@@ -16,6 +16,9 @@ use key::Key;
 mod tag_updater;
 use tag_updater::*;
 
+mod markup_updater;
+use markup_updater::*;
+
 #[derive(Serialize, Debug)]
 struct Filter<'a> {
     filter_group: FilterGroup<'a>,
@@ -194,9 +197,42 @@ async fn check_if_due(mut resp: Value, card_id: &str, api_key: &str) -> bool {
 }
 
 async fn set_card_due(card_id: &str, api_key: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let mut resp: Value = get_card_from_id(card_id, api_key).await?;
+    let resp: Value = get_card_from_id(card_id, api_key).await?;
 
-    println!("Setting card due: {}", card_id);
+    let mut updated_card_markup = resp[card_id]["data"]["markup"]
+        .clone()
+        .to_string()
+        .replace("[X]", "[ ]");
+
+    updated_card_markup.retain(|c| c != '\"');
+
+    let mut card_updates = CardMarkupUpdates::new();
+    card_updates.insert(
+        card_id.to_string(),
+        CardMarkupUpdate {
+            data: CardMarkupData {
+                markup: updated_card_markup,
+            },
+        },
+    );
+    let mut markup_updater = MarkupUpdater::new(vec![card_id.to_string()], card_updates);
+    markup_updater.update_markup().await.unwrap();
+
+    let mut card_updates = CardTagUpdates::new();
+    card_updates.insert(
+        card_id.to_string(),
+        CardTagUpdate {
+            data: CardTagData {
+                tags: vec![
+                    "super-vocab-stage-0".to_string(),
+                    "super-vocab-card".to_string(),
+                    "super-vocab-todo".to_string(),
+                ],
+            },
+        },
+    );
+    let mut tag_updater = TagUpdater::new(vec![card_id.to_string()], card_updates);
+    tag_updater.update_tags().await.unwrap();
 
     Ok(())
 }
@@ -236,7 +272,7 @@ async fn main() {
     //     eprintln!("Error sending card: {}", e);
     // }
 
-    // check_for_due_cards(&key).await;
+    check_for_due_cards(&key).await;
 
     println!("Uncomment code in main to run diffrent functions");
 }
