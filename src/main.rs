@@ -154,42 +154,56 @@ async fn check_if_due(mut resp: Value, card_id: &str, api_key: &str) -> bool {
     )) {
         if days_difference >= 3 {
             return true;
+        } else {
+            return false;
         }
     } else if tags.contains(&serde_json::Value::String(
         "super-vocab-stage-3".to_string(),
     )) {
         if days_difference >= 7 {
             return true;
+        } else {
+            return false;
         }
     } else if tags.contains(&serde_json::Value::String(
         "super-vocab-stage-4".to_string(),
     )) {
         if days_difference >= 14 {
             return true;
+        } else {
+            return false;
         }
     } else if tags.contains(&serde_json::Value::String(
         "super-vocab-stage-5".to_string(),
     )) {
         if days_difference >= 30 {
             return true;
+        } else {
+            return false;
         }
     } else if tags.contains(&serde_json::Value::String(
         "super-vocab-stage-6".to_string(),
     )) {
         if days_difference >= 90 {
             return true;
+        } else {
+            return false;
         }
     } else if tags.contains(&serde_json::Value::String(
         "super-vocab-stage-7".to_string(),
     )) {
         if days_difference >= 180 {
             return true;
+        } else {
+            return false;
         }
     } else if tags.contains(&serde_json::Value::String(
         "super-vocab-stage-8".to_string(),
     )) {
         if days_difference >= 365 {
             return true;
+        } else {
+            return false;
         }
     }
 
@@ -218,15 +232,31 @@ async fn set_card_due(card_id: &str, api_key: &str) -> Result<(), Box<dyn std::e
     let mut markup_updater = MarkupUpdater::new(vec![card_id.to_string()], card_updates);
     markup_updater.update_markup().await.unwrap();
 
+    let mut current_state: String = values_to_strings(resp[card_id]["data"]["tags"].as_array())
+        .iter()
+        .filter(|&element| element.contains("super-vocab-stage-"))
+        .map(|s| s.as_str())
+        .collect();
+
+    let last_char = current_state.chars().last().unwrap();
+    let last_char_int = last_char as u32;
+    let incremented_int = if last_char_int <= 8 {
+        last_char_int + 1
+    } else {
+        last_char_int
+    };
+    current_state.pop();
+    current_state.push(std::char::from_u32(incremented_int).unwrap());
+
     let mut card_updates = CardTagUpdates::new();
     card_updates.insert(
         card_id.to_string(),
         CardTagUpdate {
             data: CardTagData {
                 tags: vec![
-                    "super-vocab-stage-0".to_string(),
+                    current_state,
                     "super-vocab-card".to_string(),
-                    "super-vocab-todo".to_string(),
+                    "super-vocab-done".to_string(),
                 ],
             },
         },
@@ -245,7 +275,6 @@ async fn check_for_due_cards(key: &Key) {
     }
 
     if card_ids.is_empty() {
-        println!("No cards found");
         return;
     }
 
@@ -261,6 +290,17 @@ async fn check_for_due_cards(key: &Key) {
     }
 }
 
+fn values_to_strings(option_values: Option<&Vec<Value>>) -> Vec<String> {
+    option_values
+        .map(|values| {
+            values
+                .iter()
+                .map(|value| value.to_string())
+                .collect::<Vec<String>>()
+        })
+        .unwrap_or_else(|| Vec::new())
+}
+
 #[tokio::main]
 async fn main() {
     let key = Key::new();
@@ -272,7 +312,7 @@ async fn main() {
     //     eprintln!("Error sending card: {}", e);
     // }
 
-    check_for_due_cards(&key).await;
+    // check_for_due_cards(&key).await;
 
     println!("Uncomment code in main to run diffrent functions");
 }
