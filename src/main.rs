@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use serde::Serialize;
 use serde_json::Value;
-use std::collections::HashMap;
+use std::{collections::HashMap, thread, time};
 
 mod simple_card;
 use simple_card::SimpleCard;
@@ -238,6 +238,8 @@ async fn set_card_due(card_id: &str, api_key: &str) -> Result<(), Box<dyn std::e
         .map(|s| s.as_str())
         .collect();
 
+    current_state = current_state.replace("\"", "");
+
     let last_char = current_state.chars().last().unwrap();
     let last_char_int = last_char as u32;
     let incremented_int = if last_char_int <= 8 {
@@ -256,7 +258,7 @@ async fn set_card_due(card_id: &str, api_key: &str) -> Result<(), Box<dyn std::e
                 tags: vec![
                     current_state,
                     "super-vocab-card".to_string(),
-                    "super-vocab-done".to_string(),
+                    "super-vocab-todo".to_string(),
                 ],
             },
         },
@@ -312,7 +314,8 @@ async fn main() {
     //     eprintln!("Error sending card: {}", e);
     // }
 
-    // check_for_due_cards(&key).await;
-
-    println!("Uncomment code in main to run diffrent functions");
+    loop {
+        check_for_due_cards(&key).await;
+        thread::sleep(time::Duration::from_secs(60 * /* Minutes: */ 15))
+    }
 }
