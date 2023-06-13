@@ -8,10 +8,10 @@ when I started using [Supernotes](supernotes.app), for
 my daily notes driver. I started building my second brain
 and learned to really love it. But the App has a flaw, not
 a big one but in my opinion there is a feature that for 
-students is unovoidable. Which is spacial repetition and 
+students is unavoidable. Which is spacial repetition and 
 please don't mistake me, as a student the app is awesome,
-but i really love a spaced repetition system that integrates
-into my notetaking, like remnote. So i decidet to build something
+but I really love a spaced repetition system that integrates
+into my note-taking, like remnote. So I decided to build something
 like this on my own. And thanks to the awesome support by 
 [Connor](https://github.com/acnebs) and [Tobias](https://github.com/tobeagram), I was able to quickly start developing on this project.
 
