@@ -48,7 +48,6 @@ impl TagUpdater {
             .send()
             .await?;
 
-        println!("Status: {}", response.status());
         let json = response.json::<serde_json::Value>().await?;
         Ok(json)
     }

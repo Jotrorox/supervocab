@@ -97,6 +97,7 @@ async fn get_card_from_id(
 }
 
 async fn check_if_due(mut resp: Value, card_id: &str, api_key: &str) -> bool {
+    println!("checking for due cards");
     if resp[card_id]["membership"]["status"] != 2 {
         return false;
     }
@@ -211,6 +212,7 @@ async fn check_if_due(mut resp: Value, card_id: &str, api_key: &str) -> bool {
 }
 
 async fn set_card_due(card_id: &str, api_key: &str) -> Result<(), Box<dyn std::error::Error>> {
+    println!("Setting cards due");
     let resp: Value = get_card_from_id(card_id, api_key).await?;
 
     let mut updated_card_markup = resp[card_id]["data"]["markup"]
@@ -240,15 +242,25 @@ async fn set_card_due(card_id: &str, api_key: &str) -> Result<(), Box<dyn std::e
 
     current_state = current_state.replace("\"", "");
 
-    let last_char = current_state.chars().last().unwrap();
-    let last_char_int = last_char as u32;
-    let incremented_int = if last_char_int <= 8 {
-        last_char_int + 1
+    if current_state == "super-vocab-stage-0" {
+        current_state = "super-vocab-stage-1".to_string();
+    } else if current_state == "super-vocab-stage-1" {
+        current_state = "super-vocab-stage-2".to_string();
+    } else if current_state == "super-vocab-stage-2" {
+        current_state = "super-vocab-stage-3".to_string();
+    } else if current_state == "super-vocab-stage-3" {
+        current_state = "super-vocab-stage-4".to_string();
+    } else if current_state == "super-vocab-stage-4" {
+        current_state = "super-vocab-stage-5".to_string();
+    } else if current_state == "super-vocab-stage-5" {
+        current_state = "super-vocab-stage-6".to_string();
+    } else if current_state == "super-vocab-stage-6" {
+        current_state = "super-vocab-stage-7".to_string();
+    } else if current_state == "super-vocab-stage-7" {
+        current_state = "super-vocab-stage-8".to_string();
     } else {
-        last_char_int
-    };
-    current_state.pop();
-    current_state.push(std::char::from_u32(incremented_int).unwrap());
+        current_state = "super-vocab-stage-8".to_string();
+    }
 
     let mut card_updates = CardTagUpdates::new();
     card_updates.insert(
@@ -258,7 +270,6 @@ async fn set_card_due(card_id: &str, api_key: &str) -> Result<(), Box<dyn std::e
                 tags: vec![
                     current_state,
                     "super-vocab-card".to_string(),
-                    "super-vocab-todo".to_string(),
                 ],
             },
         },
