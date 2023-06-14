@@ -1,8 +1,8 @@
-use std::collections::HashMap;
+use crate::constants::BASE_URL;
 use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
 use serde::Serialize;
 use serde_json::Value;
-use crate::constants::BASE_URL;
+use std::collections::HashMap;
 
 #[derive(Serialize, Debug)]
 pub struct Filter<'a> {

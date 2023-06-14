@@ -1,18 +1,18 @@
 use std::{thread, time};
 
+mod card_checker;
 mod card_getter;
-mod util;
-mod simple_card;
 mod constants;
 mod key;
-mod tag_updater;
 mod markup_updater;
-mod card_checker;
+mod simple_card;
+mod tag_updater;
+mod util;
 
-use key::Key;
-use tag_updater::*;
-use markup_updater::*;
 use card_checker::*;
+use key::Key;
+use markup_updater::*;
+use tag_updater::*;
 use util::*;
 
 #[tokio::main]

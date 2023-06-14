@@ -1,11 +1,10 @@
+use crate::constants::BASE_URL;
+use crate::key::Key;
 use reqwest::{
     header::{HeaderMap, HeaderValue, CONTENT_TYPE},
     Client,
 };
 use serde::{Deserialize, Serialize};
-
-use crate::constants::BASE_URL;
-use crate::key::Key;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SimpleCard {
@@ -16,6 +15,7 @@ pub struct SimpleCard {
 }
 
 impl SimpleCard {
+    #[allow(dead_code)]
     pub fn new(name: &str, markup: &str, tags: Option<Vec<String>>) -> Self {
         Self {
             name: name.to_string(),
@@ -25,6 +25,7 @@ impl SimpleCard {
         }
     }
 
+    #[allow(dead_code)]
     pub fn add_tag(&mut self, tag: &str) {
         if let Some(tags) = &mut self.tags {
             tags.push(tag.to_string());
@@ -33,10 +34,12 @@ impl SimpleCard {
         }
     }
 
+    #[allow(dead_code)]
     pub fn set_id(&mut self, id: &str) {
         self.id = Some(id.to_string());
     }
 
+    #[allow(dead_code)]
     pub async fn send(&self, key: &Key) -> Result<(), reqwest::Error> {
         let client = Client::new();
         let mut headers = HeaderMap::new();

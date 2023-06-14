@@ -1,21 +1,12 @@
+use crate::{
+    card_getter::{get_card_from_id, get_vocab_card_ids},
+    key::Key,
+    markup_updater::MarkupUpdater,
+    values_to_strings, CardMarkupData, CardMarkupUpdate, CardMarkupUpdates, CardTagData,
+    CardTagUpdate, CardTagUpdates, TagUpdater,
+};
 use chrono::{DateTime, Utc};
 use serde_json::Value;
-use crate::{
-    CardTagUpdates,
-    CardTagUpdate,
-    CardTagData,
-    TagUpdater,
-    CardMarkupUpdates,
-    CardMarkupUpdate,
-    CardMarkupData, 
-    values_to_strings, 
-    markup_updater::MarkupUpdater, 
-    key::Key, 
-    card_getter::{
-        get_card_from_id, 
-        get_vocab_card_ids
-    },
-};
 
 pub async fn check_if_due(resp: Value, card_id: &str) -> bool {
     println!("checking for due cards");
