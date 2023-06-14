@@ -267,10 +267,7 @@ async fn set_card_due(card_id: &str, api_key: &str) -> Result<(), Box<dyn std::e
         card_id.to_string(),
         CardTagUpdate {
             data: CardTagData {
-                tags: vec![
-                    current_state,
-                    "super-vocab-card".to_string(),
-                ],
+                tags: vec![current_state, "super-vocab-card".to_string()],
             },
         },
     );
@@ -296,6 +293,8 @@ async fn check_for_due_cards(key: &Key) {
             Ok(card) => {
                 if check_if_due(card, &card_id, &key.key).await {
                     let _ = set_card_due(&card_id, &key.key).await;
+                } else {
+                    println!("{}", card_id);
                 }
             }
             Err(e) => println!("Error: {}", e),
