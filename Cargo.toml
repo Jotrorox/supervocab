@@ -1,7 +1,13 @@
 [package]
 name = "super_vocab"
 version = "0.1.0"
+authours = "jotrorox"
 edition = "2021"
+description = "A unofficial spaced repetiton addon to supernotes"
+readme = "https://github.com/Jotrorox/supervocab/blob/master/README.md"
+repository = "https://github.com/Jotrorox/supervocab"
+license-file = "LICENSE"
+
 
 [dependencies]
 chrono = "0.4.26"
