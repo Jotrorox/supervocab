@@ -126,12 +126,20 @@ pub async fn set_card_due(card_id: &str, api_key: &str) -> Result<(), Box<dyn st
     println!("Setting cards due");
     let resp: Value = get_card_from_id(card_id, api_key).await?;
 
+    // DEBUG
+    println!("response: {}", resp.to_string());
+
     let mut updated_card_markup = resp[card_id]["data"]["markup"]
         .clone()
         .to_string()
         .replace("[X]", "[ ]");
 
     updated_card_markup.retain(|c| c != '\"');
+    updated_card_markup = updated_card_markup.replace("\\n", "\n");
+
+    // DEBUG
+    println!("card_markup: {}", resp[card_id]["data"]["markup"].clone().to_string());
+    println!("card_markup_update: {}", updated_card_markup);
 
     let mut card_updates = CardMarkupUpdates::new();
     card_updates.insert(

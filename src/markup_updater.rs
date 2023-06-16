@@ -49,6 +49,10 @@ impl MarkupUpdater {
             .await?;
 
         let json = response.json::<serde_json::Value>().await?;
+
+        // DEBUG
+        println!("update_request_respnse: {}", json.to_string());
+
         Ok(json)
     }
 }
