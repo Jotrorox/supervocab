@@ -1,5 +1,3 @@
-use std::{thread, time};
-
 mod card_checker;
 mod card_getter;
 mod constants;
@@ -8,19 +6,23 @@ mod markup_updater;
 mod simple_card;
 mod tag_updater;
 mod util;
+mod users;
+mod normal_mode;
+mod server_mode;
+mod mode_selector;
 
-use card_checker::*;
-use key::Key;
 use markup_updater::*;
 use tag_updater::*;
 use util::*;
+use normal_mode::*;
+use server_mode::*;
+use mode_selector::*;
 
 #[tokio::main]
 async fn main() {
-    let key: Key = Key::new();
-
-    loop {
-        check_for_due_cards(&key).await;
-        thread::sleep(time::Duration::from_secs(60 * /* Minutes: */ 15))
+    if get_if_server_mode() {
+        server_mode().await;
+    } else {
+        normal_mode().await;
     }
 }
