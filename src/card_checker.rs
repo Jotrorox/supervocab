@@ -198,7 +198,7 @@ pub async fn set_card_due(card_id: &str, api_key: &str) -> Result<(), Box<dyn st
 
 pub async fn set_card_done(card_id: &str, key: &Key) -> Result<(), Box<dyn std::error::Error>> {
     let resp = get_card_from_id(card_id, &key.key).await?;
-    let tags = resp[card_id]["data"]["tags"];
+    let tags = resp[card_id]["data"]["tags"].clone();
     let mut tags_vec: Vec<String> = Vec::new();
     for tag in tags.as_array().unwrap() {
         tags_vec.push(tag.to_string().replace("\"", ""));
@@ -206,7 +206,7 @@ pub async fn set_card_done(card_id: &str, key: &Key) -> Result<(), Box<dyn std::
     if tags_vec.contains(&"super-vocab-todo".to_string()) {
         tags_vec.remove(tags_vec.iter().position(|x| x == &"super-vocab-todo".to_string()).unwrap());
     }
-    tags.push("super-vocab-done".to_string());
+    tags_vec.push("super-vocab-done".to_string());
     let mut card_updates = CardTagUpdates::new();
     card_updates.insert(
         card_id.to_string(),
