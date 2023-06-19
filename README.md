@@ -18,7 +18,7 @@ I was able to quickly start developing on this project.
 
 ## Usage
 
-### For newest version
+### For newest/development version
 1. Install the rust toolchain from [rustup.rs](https://rustup.rs).
 2. Install git using git for windows or your package manager of choice
 3. Download the Reposetory: `git clone https://github.com/Jotrorox/supervocab`
