@@ -22,13 +22,10 @@ I was able to quickly start developing on this project.
 1. Install the rust toolchain from [rustup.rs](https://rustup.rs).
 2. Install git using git for windows or your package manager of choice
 3. Download the Reposetory: `git clone https://github.com/Jotrorox/supervocab`
-4. Remove the .example extension from the config.json.example
-5. Set your API key in the just created config.json
-6. Run the Program using: `cargo run`
+6. Run the Program using: `cargo run` or using the nix-shell and `run`
 
 ### For stable version
 1. Download the latest stable release from the [releases tab](https://github.com/Jotrorox/supervocab/releases)
-2. Create the config.json in the same directory as the executable
 3. Execute the program
 
 ## Contributing (Always welcome)

@@ -17,7 +17,7 @@ use util::*;
 
 #[tokio::main]
 async fn main() {
-    let key = Key::new();
+    let key: Key = Key::new();
 
     loop {
         check_for_due_cards(&key).await;
