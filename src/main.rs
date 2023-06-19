@@ -1,3 +1,5 @@
+use std::{thread, time};
+
 mod card_checker;
 mod card_getter;
 mod constants;
@@ -5,8 +7,8 @@ mod key;
 mod markup_updater;
 mod simple_card;
 mod tag_updater;
-mod util;
 mod users;
+mod util;
 
 use markup_updater::*;
 use tag_updater::*;
