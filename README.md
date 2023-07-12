@@ -23,6 +23,7 @@ I was able to quickly start developing on this project.
 2. Install git using git for windows or your package manager of choice
 3. Download the Reposetory: `git clone https://github.com/Jotrorox/supervocab`
 6. Run the Program using: `cargo run` or using the nix-shell and `run`
+7. Build the Program using: `cargo build`
 
 ### For stable version
 1. Download the latest stable release from the [releases tab](https://github.com/Jotrorox/supervocab/releases)
