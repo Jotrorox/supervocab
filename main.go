@@ -4,22 +4,22 @@ import (
 	"supervocab/api"
 	"supervocab/config"
 	"supervocab/db"
+	"supervocab/util"
 )
 
 func main() {
-	cfg, err := config.LoadConfig("config.toml")
+	config, err := config.LoadConfig("config.toml")
 	if err != nil {
-		panic(err)
+		util.HandleFatalError(err, "could not load config")
 	}
 
-	database, err := db.Connect(cfg)
+	database, err := db.Connect(config)
 	if err != nil {
-		panic(err)
+		util.HandleFatalError(err, "could not connect to database")
 	}
 
-	err = db.CreateUsersTable(database)
-	if err != nil {
-		panic(err)
+	if err := db.CreateUsersTable(database); err != nil {
+		util.HandleFatalError(err, "could not create users table")
 	}
 
 	defer api.SetupAPI(database).Listen(":3000")
