@@ -5,10 +5,92 @@
   font-style: oblique 0deg 14deg;
 }
 
+:root {
+    --bg-color: #f5f5f5;
+    --text-color: #282828;
+    --accent-color: #458588;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 
     font-family: 'SN Pro', sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.head {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 33vh;
+}
+
+.head p {
+    font-size: 5rem;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    height: 67vh;
+}
+
+.input {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    gap: 1rem;
+}
+
+.input input {
+    width: 20rem;
+    height: 4rem;
+
+    border: none;
+    border-radius: 1rem;
+
+    text-align: center;
+}
+
+.input button {
+    width: 9rem;
+    height: 3rem;
+
+    border: none;
+    border-radius: 1.5rem;
+    
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
+.input button:hover {
+    cursor: pointer;
+}
+
+.input p {
+    font-size: 0.9rem;
+}
+
+#submit {
+    display: none;
+}
+
+#token:not(:empty) + #submit {
+    display: block;
 }
