@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'SN Pro';
-  src: url(./SNPro/SNPro-Regular.woff2) format('woff2-variations');
+  src: url(../../rsc/fonts/SNPro/SNPro-Regular.woff2) format('woff2-variations');
   font-weight: 200 900;
   font-style: oblique 0deg 14deg;
 }
