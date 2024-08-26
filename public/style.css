@@ -94,3 +94,59 @@ body {
 #token:not(:empty) + #submit {
     display: block;
 }
+
+.foot {
+    position: fixed;
+    bottom: 0.3rem;
+    right: 0.3rem;
+
+    z-index: 1;
+}
+
+.foot p {
+    font-size: 1.2rem;
+}
+
+.foot a {
+    color: var(--accent-color);
+
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .head {
+        height: 20vh;
+    }
+
+    .head p {
+        font-size: 3rem;
+    }
+
+    .main {
+        height: 80vh;
+    }
+
+    .input input {
+        width: 15rem;
+        height: 3rem;
+    }
+
+    .input button {
+        width: 7rem;
+        height: 2.5rem;
+    }
+
+    .input p {
+        font-size: 0.8rem;
+    }
+
+    .foot {
+        position: fixed;
+        bottom: 0.2rem;
+        right: 0.2rem;
+    }
+
+    .foot p {
+        font-size: 1rem;
+    }
+}
