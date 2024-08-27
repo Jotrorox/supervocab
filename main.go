@@ -1,7 +1,8 @@
 package main
 
 import (
-	"supervocab/api"
+    "github.com/gofiber/fiber/v2"
+    "supervocab/api"
 	"supervocab/config"
 	"supervocab/db"
 	"supervocab/util"
@@ -22,5 +23,10 @@ func main() {
 		util.HandleFatalError(err, "could not create users table")
 	}
 
-	defer api.SetupAPI(database).Listen(":3000")
+	defer func(api *fiber.App, addr string) {
+        err := api.Listen(addr)
+        if err != nil {
+            util.HandleFatalError(err, "There was an error starting the server")
+        }
+    }(api.SetupAPI(database), ":3000")
 }
