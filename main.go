@@ -23,6 +23,8 @@ func main() {
 		util.HandleFatalError(err, "could not create users table")
 	}
 
+	
+
 	defer func(api *fiber.App, addr string) {
         err := api.Listen(addr)
         if err != nil {
