@@ -16,6 +16,13 @@ submitButton.addEventListener("click", async () => {
     }
 
     const token = tokenInput.value
-    const url = window.location.href + "register/" + token
-    await fetch(url)
+
+    fetch(window.location.href + "register/" + token)
+        .then(response => {
+            if (response.status === 400) {
+                alert("The Token is invalid")
+            } else {
+                alert("It worked you are now signed up")
+            }
+        })
 })
