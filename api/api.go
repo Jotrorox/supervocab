@@ -27,5 +27,7 @@ func SetupAPI(database *sql.DB) *fiber.App {
 func SetupRoutes(app *fiber.App, database *sql.DB) {
 	app.Use(cors.New())
 
+	app.Static("/", "./public")
+
 	app.Get("/register/:token", routes.RegisterUserHandler(database))
 }

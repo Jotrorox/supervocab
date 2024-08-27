@@ -8,12 +8,12 @@ import (
 )
 
 func main() {
-	config, err := config.LoadConfig("config.toml")
+	cfg, err := config.LoadConfig("config.toml")
 	if err != nil {
 		util.HandleFatalError(err, "could not load config")
 	}
 
-	database, err := db.Connect(config)
+	database, err := db.Connect(cfg)
 	if err != nil {
 		util.HandleFatalError(err, "could not connect to database")
 	}
