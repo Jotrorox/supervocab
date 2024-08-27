@@ -2,9 +2,7 @@ package routes
 
 import (
     "database/sql"
-    "io"
     "log"
-    "net/http"
     "supervocab/db"
     "supervocab/util"
 

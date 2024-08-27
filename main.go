@@ -3,7 +3,8 @@ package main
 import (
     "github.com/gofiber/fiber/v2"
     "supervocab/api"
-	"supervocab/config"
+    "supervocab/checker"
+    "supervocab/config"
 	"supervocab/db"
 	"supervocab/util"
 )
@@ -23,7 +24,7 @@ func main() {
 		util.HandleFatalError(err, "could not create users table")
 	}
 
-	
+	go checker.StartChecker(database, cfg)
 
 	defer func(api *fiber.App, addr string) {
         err := api.Listen(addr)
