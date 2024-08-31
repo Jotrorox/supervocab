@@ -1,6 +1,6 @@
 package util
 
 type User struct {
-    ID int
+	ID    int
 	Token string
 }

@@ -3,9 +3,9 @@ package db
 import (
 	"database/sql"
 	"supervocab/config"
-    "supervocab/util"
+	"supervocab/util"
 
-    _ "github.com/lib/pq"
+	_ "github.com/lib/pq"
 )
 
 // Connect establishes a connection to the PostgreSQL database.
@@ -39,10 +39,10 @@ func InsertUser(db *sql.DB, token string) error {
 }
 
 func GetAllUsers(db *sql.DB) ([]util.User, error) {
-    rows, err := db.Query("SELECT * FROM users")
-    if err != nil {
-        return nil, err
-    }
+	rows, err := db.Query("SELECT * FROM users")
+	if err != nil {
+		return nil, err
+	}
 	defer rows.Close()
 
 	var users []util.User

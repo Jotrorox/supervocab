@@ -1,10 +1,10 @@
 package main
 
 import (
-    "github.com/gofiber/fiber/v2"
-    "supervocab/api"
-    "supervocab/checker"
-    "supervocab/config"
+	"github.com/gofiber/fiber/v2"
+	"supervocab/api"
+	"supervocab/checker"
+	"supervocab/config"
 	"supervocab/db"
 	"supervocab/util"
 )
@@ -27,9 +27,9 @@ func main() {
 	go checker.StartChecker(database, cfg)
 
 	defer func(api *fiber.App, addr string) {
-        err := api.Listen(addr)
-        if err != nil {
-            util.HandleFatalError(err, "There was an error starting the server")
-        }
-    }(api.SetupAPI(database), ":3000")
+		err := api.Listen(addr)
+		if err != nil {
+			util.HandleFatalError(err, "There was an error starting the server")
+		}
+	}(api.SetupAPI(database), ":3000")
 }

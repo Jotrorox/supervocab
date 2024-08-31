@@ -1,12 +1,12 @@
 package routes
 
 import (
-    "database/sql"
-    "log"
-    "supervocab/db"
-    "supervocab/util"
+	"database/sql"
+	"log"
+	"supervocab/db"
+	"supervocab/util"
 
-    "github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2"
 )
 
 func RegisterUserHandler(database *sql.DB) func(c *fiber.Ctx) error {
